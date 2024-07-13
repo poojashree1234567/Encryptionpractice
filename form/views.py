@@ -5,6 +5,7 @@ from cryptography.fernet import Fernet
 import base64
 import uuid
 from django.conf import settings
+from .encrypt_decrypt import *
 
 cipher_suite = Fernet(settings.FERNET_KEY)
 
@@ -20,22 +21,15 @@ class UserProfileCreateView(View):
         gender = request.POST.get('gender')
         country = request.POST.get('country')
         image = request.FILES.get('image')
+
         profile_uuid = uuid.uuid4()
-
-        # Convert image to base64 and encrypt
-        if image:
-            image_data = image.read()  # Read binary data from image file
-            encrypted_image_data = cipher_suite.encrypt(image_data)  # Encrypt binary data
-        else:
-            encrypted_image_data = None
-
         # Create UserProfile object
         userprofileobj = Userprofile.objects.create(
             name=name,
             surname=surname,
             gender=gender,
             country=country,
-            image=encrypted_image_data,
+            image=image,
             uuid=profile_uuid
         )
 
@@ -64,7 +58,8 @@ class UserprofileDetailView(View):
         return render(request, 'detail.html', context)
 
 class UserprofileEditView(View):
-    def get(self, request, uuid):
+    def get(self, request, encrypt_id):
+        uuid = decrypt_message(encrypt_id)
         userprofileobj = Userprofile.objects.get(uuid=uuid)
         context = {'userprofileobj': userprofileobj}
         return render(request, 'edit.html', context)
@@ -94,13 +89,8 @@ class UserprofileEditView(View):
 
 class UserprofileDeleteView(View):
     def post(self, request, uuid):
+        print(uuid)
         userprofileobj = Userprofile.objects.get(uuid=uuid)
         userprofileobj.delete()
         return redirect('index')
 
-
-# Generate a new key
-encryption_key = Fernet.generate_key().decode()
-
-# Print the key
-print(encryption_key)

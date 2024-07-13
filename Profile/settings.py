@@ -134,3 +134,4 @@ ENCRYPTION_KEY = os.environ.get('DJANGO_ENCRYPTION_KEY', Fernet.generate_key().d
 # Add this line to your existing settings
 FERNET_KEY = ENCRYPTION_KEY.encode()
 
+DJANGO_ENCRYPTION_KEY='Obr37WGwL91MwZ1zGbAIvjZN26JdcaAzB12f26mQ-SY='

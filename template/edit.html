@@ -49,7 +49,7 @@
 
     <h2>Existing Profile Image:</h2>
     {% if userprofileobj.image %}
-        <img src="data:image/jpeg;base64,{{ userprofileobj.image }}" alt="Profile Image"  style="max-width: 200px; max-height: 200px;">
+        <img src="{{ userprofileobj.image.url }}" alt="Profile Image"  style="max-width: 200px; max-height: 200px;">
     {% else %}
         <p>No profile image available.</p>
     {% endif %}

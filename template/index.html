@@ -1,3 +1,4 @@
+{% load custom_filter %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -102,7 +103,7 @@
                 <td>{{ user_profile.country }}</td>
                 <td>
                     {% if user_profile.image %}
-                    <img src="data:image/jpeg;base64,{{ user_profile.image }}" alt="Profile Image" width="100">
+                    <img src="{{ user_profile.image.url }}" alt="Profile Image" width="100">
                     {% else %}
                     No image
                     {% endif %}
@@ -117,9 +118,9 @@
                         <div class="dropdown-content">
 
                             <li>
-                                <a href="{% url 'edit' user_profile.uuid %}">Edit</a>
+                                <a href="{% url 'edit' user_profile.uuid|encrypt_id %}">Edit</a>
                                 <!-- <a href="{% url 'detail' user_profile.uuid %}">Detail</a> -->
-                                <a href="#" onclick="openModal()">Delete</a>
+                                <button onclick="openModal('{{user_profile.uuid}}')">Delete</button>
                             </li>
 
                         </div>
@@ -138,7 +139,7 @@
         <form id="deleteForm" method="post">
             {% csrf_token %}
             <button type="button" onclick="closeModal()">Cancel</button>
-            <button type="submit">Delete</button>
+            <button  type="submit">Confirm Delete</button>
         </form>
     </div>
 </div>
@@ -146,8 +147,10 @@
 
 <!-- JavaScript for Modal -->
 <script>
-    function openModal() {
+    function openModal(uuid) {
         var modal = document.getElementById("deleteModal");
+        var deleteForm =document.getElementById('deleteForm')
+        deleteForm.setAttribute('action',`/profile/${uuid}/delete/`)
         modal.style.display = "block";
     }
 

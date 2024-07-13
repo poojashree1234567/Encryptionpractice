@@ -3,28 +3,6 @@ from django.conf import settings
 from cryptography.fernet import Fernet
 import uuid
 
-cipher_suite = Fernet(settings.FERNET_KEY)
-
-class EncryptedTextField(models.TextField):
-    def __init__(self, *args, **kwargs):
-        self.cipher_suite = cipher_suite
-        super().__init__(*args, **kwargs)
-
-    def from_db_value(self, value, expression, connection):
-        if value is None:
-            return value
-        return self.cipher_suite.decrypt(value.encode()).decode()
-
-    def to_python(self, value):
-        if value is None:
-            return value
-        return self.cipher_suite.decrypt(value.encode()).decode()
-
-    def get_prep_value(self, value):
-        if value is None:
-            return value
-        return self.cipher_suite.encrypt(value.encode()).decode()
-
 class Base(models.Model):
     is_active = models.BooleanField(default=True)
     created_date = models.DateTimeField(auto_now_add=True)
