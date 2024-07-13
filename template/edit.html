@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile Detail</title>
+</head>
+<body>
+    <h1>User Profile Detail</h1>
+    <form action="{% url 'edit' userprofileobj.uuid  %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- Name and Surname fields -->
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ userprofileobj.name }}" required><br><br>
+
+        <label for="surname">Surname:</label>
+        <input type="text" id="surname" name="surname" value="{{ userprofileobj.surname }}" required><br><br>
+
+        <!-- Single image upload field -->
+        <label for="image">Upload an Image:</label>
+        <input type="file" id="image" name="image" accept="image/*"><br><br>
+
+        <!-- Radio button field -->
+        <label>Gender:</label>
+        <input type="radio" id="male" name="gender" value="male" {% if userprofileobj.gender == "male" %}checked{% endif %}>
+        <label for="male">Male</label>
+        <input type="radio" id="female" name="gender" value="female" {% if userprofileobj.gender == "female" %}checked{% endif %}>
+        <label for="female">Female</label>
+        <input type="radio" id="other" name="gender" value="other" {% if userprofileobj.gender == "other" %}checked{% endif %}>
+        <label for="other">Other</label><br><br>
+
+        <!-- Dropdown menu (select field) -->
+        <label for="country">Choose a Country:</label>
+        <select id="country" name="country">
+            <option value="india" {% if userprofileobj.country == "india" %}selected{% endif %}>India</option>
+            <option value="usa" {% if userprofileobj.country == "usa" %}selected{% endif %}>USA</option>
+            <option value="canada" {% if userprofileobj.country == "canada" %}selected{% endif %}>Canada</option>
+            <option value="uk" {% if userprofileobj.country == "uk" %}selected{% endif %}>UK</option>
+            <option value="other" {% if userprofileobj.country == "other" %}selected{% endif %}>Other</option>
+        </select><br><br>
+
+        <!-- Multiple images upload field -->
+        <label for="photos">Upload Multiple Photos:</label>
+        <input type="file" id="photos" name="photos" accept="image/*" multiple><br><br>
+
+        <!-- Submit button -->
+        <input type="submit" value="Save Changes">
+    </form>
+
+    <h2>Existing Profile Image:</h2>
+    {% if userprofileobj.image %}
+        <img src="data:image/jpeg;base64,{{ userprofileobj.image }}" alt="Profile Image"  style="max-width: 200px; max-height: 200px;">
+    {% else %}
+        <p>No profile image available.</p>
+    {% endif %}
+
+    <h2>Existing Photos:</h2>
+    {% for photo in userprofileobj.photos.all %}
+        <img src="data:image/jpeg;base64,{{ photo.photo }}" alt="Photo"  style="max-width: 200%; max-height: 200px;">
+    {% empty %}
+        <p>No photos available.</p>
+    {% endfor %}
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Detail</title>
+</head>
+<body>
+    <form action="{% url 'detail' userprofileobj.uuid%}">
+        <h1>{{ userprofileobj.name }} {{ userprofileobj.surname }}</h1>
+        <p>Gender: {{ userprofileobj.gender }}</p>
+        <p>Country: {{ userprofileobj.country }}</p>
+
+        {% if decrypted_image_data %}
+            <img src="data:image/png;base64,{{ decrypted_image_data }}" alt="Profile Image">
+        {% endif %}
+
+        <h2>Photos</h2>
+        <ul>
+            {% for photo in userprofileobj.photos.all %}
+                <li>
+                    <img src="data:image/png;base64,{{ photo.photo }}" alt="Photo">
+                </li>
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'edit' userprofileobj.uuid %}">Edit Profile</a>
+    </form>
+</body>
+</html>

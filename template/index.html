@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Example</title>
+    <style>
+        /* Styles for the modal */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black with opacity */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sample Form</h1>
+    <form action="{% url 'index' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- Name and Surname fields -->
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="surname">Surname:</label>
+        <input type="text" id="surname" name="surname" required><br><br>
+
+        <!-- Single image upload field -->
+        <label for="image">Upload an Image:</label>
+        <input type="file" id="image" name="image" accept="image/*"><br><br>
+
+        <!-- Radio button field -->
+        <label>Gender:</label>
+        <input type="radio" id="male" name="gender" value="male">
+        <label for="male">Male</label>
+        <input type="radio" id="female" name="gender" value="female">
+        <label for="female">Female</label>
+        <input type="radio" id="other" name="gender" value="other">
+        <label for="other">Other</label><br><br>
+
+        <!-- Dropdown menu (select field) -->
+        <label for="country">Choose a Country:</label>
+        <select id="country" name="country">
+            <option value="india">India</option>
+            <option value="usa">USA</option>
+            <option value="canada">Canada</option>
+            <option value="uk">UK</option>
+            <option value="other">Other</option>
+        </select><br><br>
+
+        <!-- Multiple images upload field -->
+        <label for="photos">Upload Multiple Photos:</label>
+        <input type="file" id="photos" name="photos" accept="image/*" multiple><br><br>
+
+        <!-- Submit button -->
+        <input type="submit" value="Submit">
+    </form>
+    <h2>User Profiles</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Gender</th>
+                <th>Country</th>
+                <th>Profile Image</th>
+                <th>Photos</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user_profile in userallprofiles %}
+            <tr>
+                <td>{{ user_profile.name }}</td>
+                <td>{{ user_profile.surname }}</td>
+                <td>{{ user_profile.gender }}</td>
+                <td>{{ user_profile.country }}</td>
+                <td>
+                    {% if user_profile.image %}
+                    <img src="data:image/jpeg;base64,{{ user_profile.image }}" alt="Profile Image" width="100">
+                    {% else %}
+                    No image
+                    {% endif %}
+                </td>
+                <td>
+                    {% for photo in user_profile.photos.all %}
+                    <img src="data:image/jpeg;base64,{{ photo.photo }}" alt="Photo" width="100">
+                    {% endfor %}
+                </td>
+                <td>
+                    <div class="dropdown">
+                        <div class="dropdown-content">
+
+                            <li>
+                                <a href="{% url 'edit' user_profile.uuid %}">Edit</a>
+                                <!-- <a href="{% url 'detail' user_profile.uuid %}">Detail</a> -->
+                                <a href="#" onclick="openModal()">Delete</a>
+                            </li>
+
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <p>Are you sure you want to delete this profile?</p>
+        <form id="deleteForm" method="post">
+            {% csrf_token %}
+            <button type="button" onclick="closeModal()">Cancel</button>
+            <button type="submit">Delete</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- JavaScript for Modal -->
+<script>
+    function openModal() {
+        var modal = document.getElementById("deleteModal");
+        modal.style.display = "block";
+    }
+
+    function closeModal() {
+        var modal = document.getElementById("deleteModal");
+        modal.style.display = "none";
+    }
+
+    // Close modal if user clicks outside of it
+    window.onclick = function(event) {
+        var modal = document.getElementById("deleteModal");
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+    
+</body>
+</html>
